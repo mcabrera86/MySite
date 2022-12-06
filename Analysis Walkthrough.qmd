@@ -1,0 +1,112 @@
+---
+title: "Analysis Walkthrough"
+author: "Marisol Cabrera"
+editor: visual
+format:
+  html:
+    self-contained: true
+    code-fold: true
+    code-tools: true
+---
+First load in the libraries needed
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(nycflights13) # <- make sure to install this package 
+library(tigris)
+library(tidycensus)
+library(tmap)
+library(tmaptools)
+library(janitor)
+library(writexl)
+library(here)
+options(tigris_class = "sf")
+
+```
+
+
+Now we are going to create a function that will return the sum of 2 numbers. Then we'll run an example of the function. 
+
+```{r}
+
+sumnum <- function(x, y) {
+  result <- x+y
+    return(result)
+  } 
+
+sumnum(2,3)
+
+```
+
+Now lets create a function that will return the mean of a list of numbers fed to it. First you need to create an example set of number to feed the function. 
+```{r}
+
+mean_vector <- c(1,2,3)
+
+mean_function <- function(mean_vector){
+  result <- mean(mean_vector)
+  return(result)
+}
+
+mean_function(mean_vector)
+
+
+```
+
+Next, we are adding on to the above function to have it return the results in the form of the sentence "The mean is ___" where the blank is the mean. 
+
+```{r}
+
+mean_vector <- c(1,2,3)
+
+mean_function_print <- function(mean_vector){
+  result <- paste0("The mean is ", mean(mean_vector))
+  return(result)
+}
+
+mean_function_print(mean_vector)
+
+```
+
+We will now switch up the dataset used. To download this "flights" data set we need to make sure to have the "nycflights13" package installed. Lets run all of this.
+
+```{r}
+#load the data to use for the rest of the assignment questions
+flights <- nycflights13::flights
+
+head(flights)
+```
+
+This data includes records of individual airline flights departing at New York's three metro airports, JFK, LaGuardia (LGA) and Newark (EWR).
+
+Now, we will create a function that filters the data frame to only include records from a single originating airport.
+
+```{r}
+
+filter_airport <- function(airport){
+  result <- filter(flights, origin == airport)
+  return(result)
+}
+
+#example
+filter_airport("EWR")
+
+
+```
+
+Next, we will create a function that filters the data frame to only include records from a single originating airport and aggregates the resultes by airlines to show how many flights eahc ariline has from that airport.
+
+```{r}
+
+filter_airport <- function(airport){
+  flight_data_set <- filter(flights, origin == airport)
+  result <- flight_data_set %>% 
+    group_by(carrier) %>% 
+    summarise(count=n())
+  return(result)
+}
+
+filter_airport("LGA")
+
+```
