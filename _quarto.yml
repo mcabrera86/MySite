@@ -11,6 +11,7 @@ website:
         text: Home
       - about.qmd
       - portfolio.qmd
+      - Analysis_Walkthrough.qmd
   page-footer: 
     left: "Copyright 2022, Marisol Cabrera" 
     right: 
