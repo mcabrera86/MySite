@@ -74,7 +74,10 @@ We will now switch up the dataset used. To download this "flights" data set we n
 ```{r}
 #load the data to use for the rest of the assignment questions
 flights <- nycflights13::flights
+```
 
+Here's the data:
+```{r}
 head(flights)
 ```
 
