@@ -11,6 +11,11 @@ website:
         text: Home
       - about.qmd
       - portfolio.qmd
+  page-footer: 
+    left: "Copyright 2022, Marisol Cabrera" 
+    right: 
+      - icon: github
+        href: https://github.com/mcabrera86
 
 format:
   html:

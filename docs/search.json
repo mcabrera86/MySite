@@ -35,27 +35,6 @@
     "text": "Skills\nAP Style, Adobe Premier Pro, Adobe Audition, Adobe Illustrator, Google Suite, Microsoft Suite, Salesforce, Asana, Canva, Wix, Google Analytics, R Studio"
   },
   {
-    "objectID": "index.html#work-experience-1",
-    "href": "index.html#work-experience-1",
-    "title": "Marisol’s Website",
-    "section": "Work Experience",
-    "text": "Work Experience\nCommunications Assistant - GWU Graduate Business School Admissions Office (Sept. 2022 - Present)\nCommunications Intern - TransUnion (May 2022 - Aug. 2022)"
-  },
-  {
-    "objectID": "index.html#student-organizations-1",
-    "href": "index.html#student-organizations-1",
-    "title": "Marisol’s Website",
-    "section": "Student Organizations",
-    "text": "Student Organizations\nExecutive Producer/Creative Director - GW-TV, GWU’s student-run television station (Aug. 2020 - Present)"
-  },
-  {
-    "objectID": "index.html#skills-1",
-    "href": "index.html#skills-1",
-    "title": "Marisol’s Website",
-    "section": "Skills",
-    "text": "Skills\nAP Style, Adobe Premier Pro, Adobe Audition, Adobe Illustrator, Google Suite, Microsoft Suite, Salesforce, Asana, Canva, Wix, Google Analytics, R Studio"
-  },
-  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
@@ -67,6 +46,20 @@
     "href": "portfolio.html",
     "title": "Portfolio",
     "section": "",
-    "text": "In class and professional work"
+    "text": "Here are some videos I’ve made for GW-TV, my university’s student-run TV station, and other projects I’ve made as a journalism student at the George Washington University."
+  },
+  {
+    "objectID": "portfolio.html#news-episodes",
+    "href": "portfolio.html#news-episodes",
+    "title": "Portfolio",
+    "section": "News Episodes",
+    "text": "News Episodes\nHere are two episodes from GWeek, GW-TV’s campus news program, which covers topical events ranging from on campus to international news.\nGWeek 11/16 - Roles: Executive Producer, Editor, Co-Director\nGWeek 10/14 - Roles: Executive Producer, Editor, Co-Director"
+  },
+  {
+    "objectID": "portfolio.html#promo-videos",
+    "href": "portfolio.html#promo-videos",
+    "title": "Portfolio",
+    "section": "Promo Videos",
+    "text": "Promo Videos\nObama PSA Project - Roles: Editor, Producer | created for a video production class at GW, meant to practice video editing skills in service of promoting a message.\nGW Balance Promo - Roles: Co-Editor, Co-Producer, Co-Director | created for a web production class at GW, meant to practice filming and editing skills in service of promoting an organization."
   }
 ]
