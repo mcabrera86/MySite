@@ -95,7 +95,7 @@ filter_airport("EWR")
 
 ```
 
-Next, we will create a function that filters the data frame to only include records from a single originating airport and aggregates the resultes by airlines to show how many flights eahc ariline has from that airport.
+Next, we will create a function that filters the data frame to only include records from a single originating airport and aggregates the results by airlines to show how many flights each airline has from that airport.
 
 ```{r}
 
