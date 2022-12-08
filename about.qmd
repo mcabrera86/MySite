@@ -2,8 +2,4 @@
 title: "About"
 ---
 
-About this site
-
-```{r}
-
-```
+Hi again! This is a portfolio website meant to showcase my past work and experience :)
