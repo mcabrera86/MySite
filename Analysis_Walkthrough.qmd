@@ -8,7 +8,9 @@ format:
     code-fold: true
     code-tools: true
 ---
+
 First load in the libraries needed
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -25,8 +27,7 @@ options(tigris_class = "sf")
 
 ```
 
-
-Now we are going to create a function that will return the sum of 2 numbers. Then we'll run an example of the function. 
+Now we are going to create a function that will return the sum of 2 numbers. Then we'll run an example of the function.
 
 ```{r}
 
@@ -39,7 +40,8 @@ sumnum(2,3)
 
 ```
 
-Now lets create a function that will return the mean of a list of numbers fed to it. First you need to create an example set of number to feed the function. 
+Now lets create a function that will return the mean of a list of numbers fed to it. First you need to create an example set of number to feed the function.
+
 ```{r}
 
 mean_vector <- c(1,2,3)
@@ -54,7 +56,7 @@ mean_function(mean_vector)
 
 ```
 
-Next, we are adding on to the above function to have it return the results in the form of the sentence "The mean is ___" where the blank is the mean. 
+Next, we are adding on to the above function to have it return the results in the form of the sentence "The mean is \_\_\_" where the blank is the mean.
 
 ```{r}
 
@@ -77,6 +79,7 @@ flights <- nycflights13::flights
 ```
 
 Here's the data:
+
 ```{r}
 head(flights)
 ```
