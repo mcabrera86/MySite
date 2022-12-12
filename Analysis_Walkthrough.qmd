@@ -9,7 +9,7 @@ format:
     code-tools: true
 ---
 
-First load in the libraries needed
+# First load in the libraries needed:
 
 ```{r}
 knitr::opts_chunk$set(echo = TRUE)
@@ -26,6 +26,8 @@ library(here)
 options(tigris_class = "sf")
 
 ```
+
+# Functions
 
 Now we are going to create a function that will return the sum of 2 numbers. Then we'll run an example of the function.
 
