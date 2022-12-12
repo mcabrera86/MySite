@@ -9,9 +9,11 @@ format:
     code-tools: true
 ---
 
-# First load in the libraries needed:
+### First load in the libraries needed
 
-```{r}
+Load the libraries: tidyverse, nycflights13, tigris, tidycensus, tmap, tmaptools, janitor, writexl, here
+
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
@@ -27,7 +29,7 @@ options(tigris_class = "sf")
 
 ```
 
-# Functions
+### Functions
 
 Now we are going to create a function that will return the sum of 2 numbers. Then we'll run an example of the function.
 
