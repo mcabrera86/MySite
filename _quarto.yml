@@ -14,7 +14,6 @@ website:
       - Analysis_Walkthrough.qmd
       - my_paper.qmd
       - my_article.qmd
-      - resume_for_rda.pdf
       - href: https://drive.google.com/file/d/1NTB4ZayLZGWUqhfckfSl4GzHkVMPFfuf/view?usp=sharing
         text: Resume
   page-footer: 
