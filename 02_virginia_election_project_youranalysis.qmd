@@ -1,0 +1,254 @@
+---
+title: "Virginia Election Project"
+author: "Marisol Cabrera"
+execute:
+  echo: true
+format:
+  html:
+    self-contained: true
+    code-tools: true
+---
+
+## Introduction
+
+The following page will showcase data pertaining to the Virginia results of the 2020 Presidential Election and the 2021 Virginia Gubernatorial race. Comparing the results of these two races can show the changes, if any, of the Democratic and Republican parties within these Virginian localities from 2020 to 2021.
+
+We'll combine two separate data sets from both elections into one set and use the DT package and GGPlot to analyze the data, paying particularly close attention to the percentage of the vote data for each candidate.
+
+First, download necessary packages
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+
+
+library(tidyverse)
+library(janitor)
+library(httr)
+library(jsonlite)
+library(kableExtra)
+library(here)
+options(scipen = 999)
+options(stringsAsFactors = FALSE)
+
+```
+
+Download necessary data
+
+```{r}
+joined_vacomparison <- readRDS(here("processed_data", "joined_vacomparison.rds"))
+
+```
+
+### 1 Data set table
+
+Here is an interactive table of the full data set
+
+```{r}
+#Using the DT package, I am creating an table pulling from the "joined_vacomparison" data set we loaded
+DT::datatable(joined_vacomparison, 
+              #Since we want a paginated datatable, we are going to make sure to have                        "rownames" equal "TRUE"
+              rownames = TRUE, 
+              #To make the table more interactive we are going to add a "filer" option at the                "top" of the table to search through data as needed 
+              filter = "top", 
+              #Additionally, we are going to add the option of downloading the data set with                 the "copy", "CSV", and "Excel" buttons using the next 4 lines of code
+              extensions = 'Buttons', 
+              options = list(
+                dom = 'Bfrtip',
+                buttons = c('copy', 'csv', "excel")
+              )) %>%
+  #To make the locality names clearer, the defining data point of each record, we are going to   use "formatStyle" to bold the locality name text and color it red
+  DT::formatStyle('locality',  color = 'red', fontWeight = 'bold')
+```
+
+### 2 Chart: Youngkin vs Trump
+
+Here is a chart showing the Top 5 counties with the highest differences between Younkin/Trump percent
+
+```{r}
+#First, to make this chart we have to create a new column. To do this we are going to use the mutate function. We are using the "pct_youngkin" and the "trump_pct" columns which both hold the pecentage of the vote each candidate recieved in their race. Subtracting the two will give us the difference which will be displayed in this new "Y_vs_T" column in the new Y_T_chart data set which will be used in the following code for the ggplot chart.
+Y_T_chart <- joined_vacomparison %>% 
+  mutate(
+    Y_vs_T = pct_youngkin - trump_pct
+  )
+
+#In order to get the Top 5 localities like we want, we have to arrange the data from biggest to smallest using the arrange function. We use "desc" as well since the default is smallest to largest. 
+ordered_Y_T_chart <- Y_T_chart %>% arrange(desc(Y_vs_T))
+
+#Now that the data is ordered correctly we can use the head function to get just the first 5 which will be the largest. 
+short_Y_T_chart<- head(ordered_Y_T_chart, 5)
+
+#using GGPlot we can now use this shortened, ordered data as the data set to pull from. Using locality name as the independent variable and our new Youngkin vs Trump column as our dependent variable, this table visualizes the top 5 localties with the largest percentage difference. 
+#we use "reorder" for the locality so that the bars appear in descending percentage order as well. 
+#Using "fill" I also assigned the chart a red hex code to have a better visual appeal
+#I also assigned a fitting y axis and x axis name as well as a title to make the chart easier to read
+#I used "coord_flip()" as the localities names were too mushed together in the default display
+ggplot(short_Y_T_chart, aes(x = reorder(locality, Y_vs_T), y = Y_vs_T)) +
+  geom_col(fill = "#B33F40") + 
+  scale_y_continuous(name = "Youngkin percentage points vs Trump") +
+  scale_x_discrete(name = "Locality Name") +
+  ggtitle("Youngkin vs Trump Percentage Difference by Locality (Top 5)") +
+  coord_flip()
+```
+
+### 3 Chart: Youngkin top localities
+
+Here is a chart that shows the Top 5 counties based on where Youngkin got the highest percentage of the vote
+
+```{r}
+#Since the data for this chart already exists, we can skip the mutate function and jump right to ordering the data set from pct_youngkin largest to smallest
+ordered_Y_chart <- Y_T_chart %>% arrange(desc(pct_youngkin))
+
+#Now that it is ordered we can slice off the top 5 rows
+short_Y_chart<- head(ordered_Y_chart, 5)
+
+#Using this new ordered, shortened data set we can build a GGPlot chart using locality name as the independent variable and Youngkin percentage dependent variable. This table visualizes the top 5 Youngkin percentage share localties.  
+#we use "reorder" for the locality so that the bars appear in descending percentage order 
+#Using "fill" I also assigned the chart a red hex code to have a better visual appeal
+#I also assigned a fitting y axis and x axis name as well as a title to make the chart easier to read
+#I used "coord_flip()" as the localities names were too mushed together in the default display
+ggplot(short_Y_chart, aes(x = reorder(locality, pct_youngkin), y = pct_youngkin)) +
+  geom_col(fill = "#B33F40") + 
+  scale_y_continuous(name = "Youngkin percentage of the vote") +
+  scale_x_discrete(name = "Locality Name") +
+  ggtitle("Top Youngkin Percentage of the Vote by Locality (Top 5)") +
+  coord_flip()
+```
+
+### 4 Table: Mcauliffe top localities
+
+Here is a table that shows the Top 5 counties based on where Mcauliffe got the highest percentage of the vote
+
+```{r}
+#Again, since the data for this chart already exists, we can jump right to ordering the data set from pct_mcauliffe largest to smallest
+ordered_M_chart <- Y_T_chart %>% arrange(desc(pct_mcauliffe))
+
+#With this properly ordered data we can slice off the top 5 rows
+short_M_chart <- head(ordered_M_chart, 5)
+
+#using the new data set "short_M_chart" we can use the select function to pull out only the relevent data points we want, in this case the locality name and the percent of Mcauliffe's vote in the DT created table.
+short_M_chart %>% 
+  select(locality, pct_mcauliffe) %>% 
+  DT::datatable(rownames = FALSE, 
+                options = list(searching = FALSE, paging = FALSE, dom = "tip"))
+```
+
+## My own analysis
+
+### 1: Biden vs Mcauliffe
+
+Here is a chart showing the top 5 localities with the biggest differences between the percentage of the vote from Biden to Mcauliffe.
+
+```{r}
+#First, we need to use the mutate function to create a new column showing the difference between Biden's percentage share and Mcauliffe's. We are using "biden_pct" and "pct_youngkin" columns which both hold the pecentage of the vote each candidate recieved in their race. By subtracting the two, "B_vs_M" will give us the difference which will be used in the following code for the ggplot chart.
+B_M_chart <- Y_T_chart %>% 
+  mutate(
+    B_vs_M = biden_pct - pct_mcauliffe
+    )
+#To get the Top 5 localities like we want, we have to arrange the data from biggest to smallest using the arrange function and use "desc" as well since the default is smallest to largest. 
+ordered_B_M_chart <- B_M_chart %>% arrange(desc(B_vs_M))
+
+#Now that the data is ordered correctly we can use the head function to get just the first 5 which will be the largest. 
+short_B_M_chart<- head(ordered_B_M_chart, 5)
+
+
+#Using GGPlot we can now use this shortened, ordered data as the data set to pull from. Using locality name as the independent variable and the new Biden vs Mcauliffe column as our dependent variable, this table visualizes the top 5 localties with the largest percentage difference. 
+#we use "reorder" for the locality so that the bars appear in descending percentage order as well. 
+#Using "fill" I also assigned the chart a blue hex code to have a better visual appeal
+#I also assigned a fitting y axis and x axis name as well as a title to make the chart easier to read
+#I used "coord_flip()" as the localities names were too mushed together in the default display
+ggplot(short_B_M_chart, aes(x = reorder(locality, B_vs_M), y = B_vs_M)) +
+  geom_col(fill = "#6577B3") + 
+  scale_y_continuous(name = "Biden percentage points vs Mcauliffe") +
+  scale_x_discrete(name = "Locality Name") +
+  ggtitle("Biden vs Mcauliffe Percentage Difference by Locality (Top 5)") +
+  coord_flip()
+```
+
+### 2: Closet localities in gubernatorial race
+
+Here is a chart showing the top 5 localities that had the closest races in the 2021 gubernatorial race
+
+```{r}
+#Now instead of finding the largest difference we are going to find the closest races. This could be helpful for finding swing districts. 
+
+#To do this we need to create a new column finding the difference between Mcaullife and Youngkin's percentage of the vote. We use the absoulte value of the difference since we do not care about who won but by how much, looking at the values closest to zero to find the closest races. The mutate function creates a new column, "M_vs_Y" showing this data.
+G_chart <- Y_T_chart %>% 
+  mutate(
+    M_vs_Y = abs(pct_mcauliffe - pct_youngkin)
+    )
+
+#Now we order the data with the arrange function from smallest to largest since that will give us the races with the smallest difference or the closest races.
+ordered_G_chart <- G_chart %>% arrange(M_vs_Y)
+
+#With this ordered data we will use the head function to select the top 5 closest races. 
+short_ordered_G_chart<- head(ordered_G_chart, 5)
+
+#Using GGPlot, we will pull from the ordered, shortened data set using locality on the X axis, ordered by percentage value in descending order using "reorder", and the percentage difference on the Y axis
+#I used a purple hex code to make the chart more visually appealing
+#Additionally, I gave the X and Y axis an appropraite name and the chart a title to make it easier to understand
+#I also used "coord_flip" so the X axis had more room to display the locality labels 
+ggplot(short_ordered_G_chart, aes(x = reorder(locality, M_vs_Y), y = M_vs_Y)) +
+  geom_col(fill = "#5F396A") + 
+  scale_y_continuous(name = "Difference in Percentage Points") +
+  scale_x_discrete(name = "Locality Name") +
+  ggtitle("Top 5 Closest Localities in Gubernatorial Race") +
+  coord_flip()
+```
+
+### 3: Closet localities in presidential race
+
+Here is a chart showing the top 5 localities that had the closest races in the 2020 presidential race
+
+```{r}
+#Similarly we are going to find the closest races in the presidential race. 
+
+#To do this we need to create a new column finding the difference between Biden and Trump's percentage of the vote. Again, using the absoulte value of the difference since we do not care about who won but by how much, looking at the values closest to zero to find the closest races. The mutate function creates a new column, "B_vs_T" showing this data.
+P_chart <- Y_T_chart %>% 
+  mutate(
+    B_vs_T = abs(biden_pct - trump_pct)
+    )
+
+#Now we will arrange the data with the arrange function from smallest to largest since that will give us the races with the smallest difference or the closest races.
+ordered_P_chart <- P_chart %>% arrange(B_vs_T)
+
+#With this ordered data we will use the head function to select the top 5 closest races. 
+short_ordered_P_chart<- head(ordered_P_chart, 5)
+
+#Using GGPlot, we will pull from the ordered, shortened data set using locality on the X axis, ordered by percentage value in descending order using "reorder", and the percentage difference on the Y axis
+#To make chart look more visually appealing, we will use a purple hex code in "fill"
+#And to make the chart easier to understand, we will give the X and Y axis an appropraite name and the chart a title
+#Also we will used "coord_flip" so the X axis has more room to display the locality labels 
+ggplot(short_ordered_P_chart, aes(x = reorder(locality, B_vs_T), y = B_vs_T)) +
+  geom_col(fill = "#5F396A") + 
+  scale_y_continuous(name = "Difference in Percentage Points") +
+  scale_x_discrete(name = "Locality Name") +
+  ggtitle("Top 5 Closest Localities in Presidential Race") +
+  coord_flip()
+```
+
+## Extra credit:
+
+```{r}
+#To turn 4 Table: Mcauliffe top localities into a function we will create a function called "create_table"
+#the argument in this case is labeled as "data_set" since the name of the data set is what we are going to feed the function to run
+create_table <- function(data_set){
+  
+  #first we need to create a properly ordered data set from the pov of mcauliffe's percentage share. Since we want the largest Mcauliffe wins, we will use the arrange function in descending order. 
+  ordered_table <- data_set %>% arrange(desc(pct_mcauliffe))
+  
+  #now we want only the top 5 localities, so we will use the head function to select only the top 5, making sure to use the new ordered table so that the top 5 are also the largest. 
+  shortened_table <- head(ordered_table, 5)
+  
+  #the final step will be using the DT package to actually create the table. Using the shortened, ordered data set we will use the select function to pull out only the data points we care about and want displayed on the table, the locality name and Mcauliffe's percentage.
+  result <- shortened_table %>% 
+    select(locality, pct_mcauliffe) %>% 
+    DT::datatable(rownames = FALSE, 
+                options = list(searching = FALSE, paging = FALSE, dom = "tip"))
+  #We want to make sure that the table is actually returned at the end of the function, so we will use "return" to call the "result" object which is the table we just created
+  return(result)
+}
+
+#here is the function in action creating the same table as in step 4
+create_table(Y_T_chart)
+  
+
+```

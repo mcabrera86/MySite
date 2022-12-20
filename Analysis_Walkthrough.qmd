@@ -34,28 +34,33 @@ options(tigris_class = "sf")
 Now we are going to create a function that will return the sum of 2 numbers. Then we'll run an example of the function.
 
 ```{r}
-
+#naming this function "summun" we want the function to run on two arguments, "x" and "y" which will be the two numbers we want to add together
 sumnum <- function(x, y) {
+  #the function will perform the simple arithmetic function as coded here
   result <- x+y
+    #we want to make sure the result is actually displayed in the end so we      will make sure to include a return line
     return(result)
   } 
 
+#Here is the function in action
 sumnum(2,3)
 
 ```
 
-Now lets create a function that will return the mean of a list of numbers fed to it. First you need to create an example set of number to feed the function.
+Now lets create a function that will return the mean of a list of numbers fed to it.
 
 ```{r}
 
-mean_vector <- c(1,2,3)
-
+#the argument for this function will be a list of numbers so we will label the argument as "mean_vector"
 mean_function <- function(mean_vector){
+  #this function mean to find the mean so we can use the "mean" function to perform this task
   result <- mean(mean_vector)
+  #In order to spit out a result at the end of the function we need to include this "result" line
   return(result)
 }
 
-mean_function(mean_vector)
+#Here is the function in action with a set of numbers
+mean_function(c(1,2,3))
 
 
 ```
@@ -64,14 +69,16 @@ Next, we are adding on to the above function to have it return the results in th
 
 ```{r}
 
-mean_vector <- c(1,2,3)
-
+#Now we are adding a print factor
 mean_function_print <- function(mean_vector){
+  #Here we want the result object to include this "paste0" function in addition to the "mean" function. We can have the text always start off with "The mean is " making sure to add a space at the end and have the sentence end with what ever mean value to function calculates.
   result <- paste0("The mean is ", mean(mean_vector))
+  #again make sure to include the return line to display a result
   return(result)
 }
 
-mean_function_print(mean_vector)
+#here is the funciton in action
+mean_function_print(c(1,2,3))
 
 ```
 
@@ -85,6 +92,7 @@ flights <- nycflights13::flights
 Here's the data:
 
 ```{r}
+#using the head function gives us the first 6 rows of the data set to get a feel for the data format
 head(flights)
 ```
 
@@ -93,13 +101,15 @@ This data includes records of individual airline flights departing at New York's
 Now, we will create a function that filters the data frame to only include records from a single originating airport.
 
 ```{r}
-
+#This function's argument will be the abbreviation of the airport name
 filter_airport <- function(airport){
+  #using the filter function with the airport abbreviation will return information for only the airport selected
   result <- filter(flights, origin == airport)
+  #make sure to include the return line to display a result
   return(result)
 }
 
-#example
+#example of function
 filter_airport("EWR")
 
 
@@ -108,15 +118,107 @@ filter_airport("EWR")
 Next, we will create a function that filters the data frame to only include records from a single originating airport and aggregates the results by airlines to show how many flights each airline has from that airport.
 
 ```{r}
-
-filter_airport <- function(airport){
+#This function will build off our previous function, again the argument remains the same, the airport abbreviation
+new_filter_airport <- function(airport){
+  #filter function information remains the same
   flight_data_set <- filter(flights, origin == airport)
+  #the result will change slights to select only the data we want displayed, the carrier, and the count of this value in the other column
   result <- flight_data_set %>% 
     group_by(carrier) %>% 
     summarise(count=n())
+  #Include this line so result is actually displayed
   return(result)
 }
 
-filter_airport("LGA")
+#Example of function in action
+new_filter_airport("LGA")
 
 ```
+
+# Census Data
+
+Now we will look at census data. The following sections will require use of the tidycensus package, so make sure that is downloaded. Additionally, we will be downloading the data on populations with bachelor's and graduate/professional degrees.
+
+### Credentials
+First make sure your API Key credential is loaded. You only have to do this once so download here:
+https://api.census.gov/data/key_signup.html
+
+Then after it is downloaded once, comment the following line so you're code runs correctly. 
+
+```{r}
+#census_api_key("d0f1c94dadbeb7b2428ea94375fe77ec92f5411f", install=TRUE)
+```
+
+Here are the census variables we will be using:
+
+```{r}
+myvars <- c(education_total = "B06009_001",
+            education_bachelors = "B06009_005",
+            education_gradprofess = "B06009_006")
+```
+
+Now, lets pull down the state-level data for these variables.
+
+```{r}
+#To do this we will use the "get_acs" function that is a part of the tidycensus package. Since we want the state level, we will make sure geography = "state" and we will make sure geometry = TRUE to pull down the geospatial/mapping data tied to each state
+get_acs(geography = "state",
+        variables = myvars,
+        output = "wide",
+        geometry = TRUE)
+```
+
+Let's clean up the data set, removing the three "margin of error" columns
+
+```{r}
+#to do this we will name and save the data set created with the "get_acs" function
+allstates_wide <- get_acs(geography = "state",
+        variables = myvars,
+        output = "wide",
+        geometry = TRUE)
+
+#now lets create a new data set called "clean_allstates_wide" that is cleaned up using the "select" function removing, using the "-" character, all columns that end with "m" as that denotes the margin of error columns
+clean_allstates_wide <- allstates_wide %>%
+  select(-ends_with("M"))
+
+#here is the new clean data set
+clean_allstates_wide
+```
+
+Now we will create a new column that contains the percentage of people with a bachelor's or higher degree for each state. 
+
+```{r}
+#Since the Census counts people with a bachelor's only vs. a graduate degree separately, we will need to combine the two categories before making our calculation against the total population column. To do this we will use the mutate function to combine "education_bachelorsE" and "education_gradprofessE"
+new_clean_allstates_wide <- clean_allstates_wide %>% 
+  mutate(bach_or_higher = education_bachelorsE + education_gradprofessE)
+
+#With that new combined column created we can use the mutate function again to create the percentage column
+pctdata_new_clean_allstates_wide <- new_clean_allstates_wide %>% 
+  mutate(pct_ed_bach_or_higher = (bach_or_higher / education_totalE) *100)
+
+#here is the data set with out new columns
+pctdata_new_clean_allstates_wide
+```
+
+Now let's create a map of the continental U.S. showing the new percentage measure we've created. 
+
+```{r}
+#First we need to use the filter function to filter out Alaska, Hawaii and Puerto Rico
+NEW_pctdata_new_clean_allstates_wide <- pctdata_new_clean_allstates_wide %>% 
+  #using "!=" will filter out the values listed
+  filter(NAME != "Alaska", NAME !="Hawaii", NAME !="Puerto Rico")
+
+#here is the filtered data
+NEW_pctdata_new_clean_allstates_wide
+
+#Now we will use the tmap package to create a shaded map that shows the percentage of Bachelor's-and-higher populations in each state.
+
+#mode = "plot" creates a static image for us to analyze
+tmap_mode(mode = "plot")
+
+#make sure to use the new filtered data set for the map
+tm_shape(NEW_pctdata_new_clean_allstates_wide) +
+  #use "pct_ed_bach_or_higher" so the package knows which value to shade by and "GEOID" so the map is pulling from the right state information
+  tm_polygons("pct_ed_bach_or_higher", id = "GEOID")
+```
+
+-- END ---

@@ -14,6 +14,8 @@ website:
       - Analysis_Walkthrough.qmd
       - my_paper.qmd
       - my_article.qmd
+      - href: 02_virginia_election_project_youranalysis.qmd
+        text: Virginia Election Project
       - href: https://drive.google.com/file/d/1NTB4ZayLZGWUqhfckfSl4GzHkVMPFfuf/view?usp=sharing
         text: Resume
   page-footer: 
