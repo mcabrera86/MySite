@@ -17,7 +17,7 @@ We'll combine two separate data sets from both elections into one set and use th
 
 First, download necessary packages
 
-```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+```{r setup, warning=FALSE, message=FALSE}
 
 
 library(tidyverse)
